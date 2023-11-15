@@ -1,8 +1,6 @@
 function boom(myArray) {
-    let lane = [[]]
     let allLane = [[]]
     let saveIndex = [];
-    var sum = 0;
     console.log("input: ")
     for (let i = 0; i < myArray.length; i++) {
         let len = myArray[i].length
@@ -19,7 +17,6 @@ function boom(myArray) {
     console.log(allLane)
 }
 let myArray = [[0, 2, 0], [1, 0, 1], [0, 1, 1], [0, 1, 1], [0, 0, 0]]
-const boomSave = boom(myArray);
 function pushArray(saveIndex, final) {
     let len = saveIndex.length;
     //let final = [[0,1,1],[0,1,0]]
@@ -37,3 +34,5 @@ function pushArray(saveIndex, final) {
     }
     return final
 }
+const boomSave = boom(myArray);
+
