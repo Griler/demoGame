@@ -1,146 +1,102 @@
-const selectors = {
-    boardContainer: document.querySelector('.board-container'),
-    board: document.querySelector('.board'),
-    moves: document.querySelector('.moves'),
-    timer: document.querySelector('.timer'),
-    start: document.querySelector('button'),
-    win: document.querySelector('.win')
-}
+document.body.style.background = "#333333"
+document.body.style.margin = "0"
+const tilesContainer = document.querySelector(".tiles");
+const styleContainer = document.getElementById("tiles");
+console.log(styleContainer)
+styleContainer.style.margin = '10px auto';
+styleContainer.style.width = 'max-content'
+styleContainer.style.display = 'grid';
+styleContainer.style.gridTemplateColumns = 'repeat(4, 100px)';
+styleContainer.style.gap = '16px';
+styleContainer.style.boxSizing = 'border-box';
+const colors = ["aqua", "aquamarine", "crimson", "blue", "dodgerblue", "gold", "greenyellow", "teal","red","white"];
+const colorsPicklist = [...colors, ...colors];
+const tileCount = colorsPicklist.length;
+let coins = 10000;
+// Game state
+let revealedCount = 0;
+let activeTile = null;
+let awaitingEndOfMove = false;
+const coinsElement = document.getElementById("coins")
+coinsElement.style.color = 'white';
+coinsElement.innerHTML = `coins: ${coins}`
+coinsElement.style.fontSize ='20px'
+coinsElement.style.alignContent = 'center'
+coinsElement.style.justifyContent = 'center'
+coinsElement.style.display = 'grid'
+console.log(coins);
+function buildTile(color) {
+    const element = document.createElement("div");
+    element.classList.add("tile");
+    element.setAttribute("data-color", color);
+    element.setAttribute("data-revealed", "false");
 
-const state = {
-    gameStarted: false,
-    flippedCards: 0,
-    totalFlips: 0,
-    totalTime: 0,
-    loop: null
-}
-
-const shuffle = array => {
-    const clonedArray = [...array]
-
-    for (let i = clonedArray.length - 1; i > 0; i--) {
-        const randomIndex = Math.floor(Math.random() * (i + 1))
-        const original = clonedArray[i]
-
-        clonedArray[i] = clonedArray[randomIndex]
-        clonedArray[randomIndex] = original
-    }
-
-    return clonedArray
-}
-
-const pickRandom = (array, items) => {
-    const clonedArray = [...array]
-    const randomPicks = []
-
-    for (let i = 0; i < items; i++) {
-        const randomIndex = Math.floor(Math.random() * clonedArray.length)
-
-        randomPicks.push(clonedArray[randomIndex])
-        clonedArray.splice(randomIndex, 1)
-    }
-
-    return randomPicks
-}
-
-const generateGame = () => {
-    const dimensions = selectors.board.getAttribute('data-dimension')
-
-    if (dimensions % 2 !== 0) {
-        throw new Error("The dimension of the board must be an even number.")
-    }
-
-    const emojis = ['🥔', '🍒', '🥑', '🌽', '🥕', '🍇', '🍉', '🍌', '🥭', '🍍']
-    const picks = pickRandom(emojis, (dimensions * dimensions) / 2)
-    const items = shuffle([...picks, ...picks])
-    const cards = `
-        <div class="board" style="grid-template-columns: repeat(${dimensions}, auto)">
-            ${items.map(item => `
-                <div class="card">
-                    <div class="card-front"></div>
-                    <div class="card-back">${item}</div>
-                </div>
-            `).join('')}
-       </div>
-    `
-
-    const parser = new DOMParser().parseFromString(cards, 'text/html')
-
-    selectors.board.replaceWith(parser.querySelector('.board'))
-}
-
-const startGame = () => {
-    state.gameStarted = true
-    selectors.start.classList.add('disabled')
-
-    state.loop = setInterval(() => {
-        state.totalTime++
-
-        selectors.moves.innerText = `${state.totalFlips} moves`
-        selectors.timer.innerText = `Time: ${state.totalTime} sec`
-    }, 1000)
-}
-
-const flipBackCards = () => {
-    document.querySelectorAll('.card:not(.matched)').forEach(card => {
-        card.classList.remove('flipped')
-    })
-
-    state.flippedCards = 0
-}
-
-const flipCard = card => {
-    state.flippedCards++
-    state.totalFlips++
-
-    if (!state.gameStarted) {
-        startGame()
-    }
-
-    if (state.flippedCards <= 2) {
-        card.classList.add('flipped')
-    }
-
-    if (state.flippedCards === 2) {
-        const flippedCards = document.querySelectorAll('.flipped:not(.matched)')
-
-        if (flippedCards[0].innerText === flippedCards[1].innerText) {
-            flippedCards[0].classList.add('matched')
-            flippedCards[1].classList.add('matched')
+    element.addEventListener("click", () => {
+        const revealed = element.getAttribute("data-revealed");
+        if (
+            awaitingEndOfMove
+            || revealed === "true"
+            || element == activeTile
+        ) {
+            return;
         }
 
-        setTimeout(() => {
-            flipBackCards()
-        }, 1000)
-    }
-    if (!document.querySelectorAll('.card:not(.flipped)').length) {
-        setTimeout(() => {
-            selectors.boardContainer.classList.add('flipped')
-            selectors.win.innerHTML = `
-                <span class="win-text">
-                    You won!<br />
-                    with <span class="highlight">${state.totalFlips}</span> moves<br />
-                    under <span class="highlight">${state.totalTime}</span> seconds
-                </span>
-            `
+        // Reveal this color
+        element.style.backgroundColor = color;
 
-            clearInterval(state.loop)
-        }, 1000)
-    }
-}
-
-const attachEventListeners = () => {
-    document.addEventListener('click', event => {
-        const eventTarget = event.target
-        const eventParent = eventTarget.parentElement
-
-        if (eventTarget.className.includes('card') && !eventParent.className.includes('flipped')) {
-            flipCard(eventParent)
-        } else if (eventTarget.nodeName === 'BUTTON' && !eventTarget.className.includes('disabled')) {
-            startGame()
+        if (!activeTile) {
+            activeTile = element;
+            return;
         }
-    })
+
+        const colorToMatch = activeTile.getAttribute("data-color");
+
+        if (colorToMatch === color) {
+            element.setAttribute("data-revealed", "true");
+            activeTile.setAttribute("data-revealed", "true");
+            coins +=1000;
+            coinsElement.innerHTML = `coins: ${coins}`
+            activeTile = null;
+            awaitingEndOfMove = false;
+            revealedCount += 2;
+            if (revealedCount === tileCount) {
+                alert("You win! Refresh to start again.");
+                window.location.reload()
+            }
+            return;
+        }
+        awaitingEndOfMove = true;
+        coins -=500;
+        coinsElement.innerHTML = `coins: ${coins}`
+        console.log(coins)
+
+        setTimeout(() => {
+            activeTile.style.backgroundColor = null;
+            element.style.backgroundColor = null;
+            awaitingEndOfMove = false;
+            activeTile = null;
+            if(coins <= 0){
+                alert("You lose! Refresh to start again.");
+                window.location.reload()
+            }
+        }, 1000);
+    });
+
+    return element;
 }
 
-generateGame()
-attachEventListeners()
+function resetButton(){
+    let rs = window.confirm('Do you want reset game !')
+    if(rs){window.location.reload();}
+    else{
+        return 0;
+    }
+}
+// Build up tiles
+for (let i = 0; i < tileCount; i++) {
+    const randomIndex = Math.floor(Math.random() * colorsPicklist.length);
+    const color = colorsPicklist[randomIndex];
+    const tile = buildTile(color);
+    colorsPicklist.splice(randomIndex, 1);
+    tilesContainer.appendChild(tile);
+}
