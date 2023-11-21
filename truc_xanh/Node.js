@@ -42,9 +42,10 @@ export class Node { // entity
         tile.style.position = "fixed"
         tile.style.width = "100px";
         tile.style.height = "100px";
-        tile.style.background = "#111111";
+        tile.style.background = "url(./imgCard.png)";
+        tile.style.backgroundSize = "cover"
         tile.style.cursor = "pointer"
-        tile.style.border = "5px solid #444444"
+        tile.style.border = "2px solid #444444"
         tile.style.top ='250px'
         tile.style.left = '700px'
         return tile;

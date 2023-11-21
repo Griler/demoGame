@@ -2,12 +2,6 @@ body {
     background: #333333;
     margin: 0;
 }
-.tile {
-    height: 100px;
-    background: #111111;
-    border: 5px solid #444444;
-    cursor: pointer;
-}
 .button-2 {
     background-color: #ffffff;
     border-radius: 8px;

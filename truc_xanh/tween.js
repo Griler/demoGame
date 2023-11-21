@@ -4,11 +4,11 @@ export class Tween {
         gsap.to(oj, {
             scaleX: 0, duration,
             onComplete: () =>
-                oj.style.backgroundColor = `${color}`,
+                oj.style.background = `${color}`,
         });
         gsap.to(oj, {
             scaleX: 1, delay: duration, onComplete: () =>
-                oj.style.backgroundColor = `${color}`,
+                oj.style.background = `${color}`,
         });
     }
 

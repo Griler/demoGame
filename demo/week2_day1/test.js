@@ -82,7 +82,6 @@ function buildGrid() {
 buildGrid()
 
 function click(element, color) {
-    flip()
     const revealed = element.getAttribute("data-revealed");
     if (
         awaitingEndOfMove

@@ -15,7 +15,7 @@ import {Tween} from "./tween.js";
 
 const anamtionController = new Tween();
 const card = new Node();
-document.body.style.background = "url(image.jpg)"
+document.body.style.background = "url(./img-1.webp)"
 document.body.style.backgroundSize = "cover"
 document.body.style.margin = "0"
 const tilesContainer = document.querySelector(".tiles");
@@ -126,15 +126,17 @@ function click(element, color) {
     coinsElement.innerHTML = `coins: ${coins}`
     console.log(coins)
     setTimeout(() => {
-        activeTile.style.background = "#111111";
-        element.style.background = "#111111";
+        element.style.background = "url(./imgCard.png)";
+        element.style.backgroundSize = "cover";
+        activeTile.style.background = "url(./imgCard.png)";
+        activeTile.style.backgroundSize = "cover"
         awaitingEndOfMove = false;
         activeTile = null;
         if (coins <= 0) {
             alert("You lose! Refresh to start again.");
             window.location.reload()
         }
-    }, 800);
+    }, 1000);
 }
 
 function resetButton() {
