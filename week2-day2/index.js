@@ -50,9 +50,32 @@ function coinDraw() {
     coinsElement.style.alignContent = 'center'
     coinsElement.style.justifyContent = 'center'
     coinsElement.style.display = 'grid'
-    console.log(coins);
 }
 coinDraw()
+function btnDraw(){
+    const btnElement = document.getElementById("button");
+    btnElement.style.background = '#ffffff';
+    btnElement.style.borderRadius = '8px';
+    btnElement.style.borderWidth = '0px';
+    btnElement.style.color = '#d53333';
+    btnElement.style.fontSize = '14px';
+    btnElement.style.fontWeight = '500';
+    btnElement.style.fontFamily = '"Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif';
+    //tableElement.appendChild(btnElement)
+}
+btnDraw()
+const tableElement = document.getElementById("table");
+
+function tableDraw() {
+     tableElement.style.display = "grid";
+     tableElement.style.width = '200px';
+     tableElement.style.height ='100px'
+     tableElement.style.gridTemplateAreas = "a1 b1"
+     tableElement.style.gridGap = "2px"
+     tableElement.style.textAlign = "center"
+    tableElement.style.margin = "auto"
+}
+tableDraw()
 let isUpdating = new Array(20).fill(false);
 let duration = 0.2;
 let timer = 0;
