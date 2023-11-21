@@ -1,5 +1,4 @@
 let lastTime;
-let i = 0;
 
 function gameLoop(timeStamp) {
     lastTime = lastTime || timeStamp;
@@ -12,23 +11,28 @@ function gameLoop(timeStamp) {
 window.requestAnimationFrame(gameLoop);
 
 import {Node} from './Node.js'
+import {Tween} from "./tween.js";
 
+const anamtionController = new Tween();
 const card = new Node();
-document.body.style.background = "#333333"
+document.body.style.background = "url(image.jpg)"
+document.body.style.backgroundSize = "cover"
 document.body.style.margin = "0"
 const tilesContainer = document.querySelector(".tiles");
 const styleContainer = document.getElementById("tiles");
 
 function drawStyleContainer() {
+    //styleContainer.style.position = "static";
     styleContainer.style.margin = '10px auto';
     styleContainer.style.width = 'max-content'
+    styleContainer.style.height = '700px'
     styleContainer.style.display = 'grid';
-    styleContainer.style.gridTemplateColumns = 'repeat(4, 100px)';
     styleContainer.style.gap = '16px';
     styleContainer.style.boxSizing = 'border-box';
 }
 
-drawStyleContainer()
+drawStyleContainer();
+
 const colors = ["aqua", "aquamarine", "crimson", "blue", "dodgerblue", "gold", "greenyellow", "teal", "red", "white"];
 const colorsPicklist = [...colors, ...colors];
 const tileCount = colorsPicklist.length;
@@ -40,27 +44,28 @@ let awaitingEndOfMove = false;
 const coinsElement = document.getElementById("coins")
 
 function coinDraw() {
-    coinsElement.style.color = 'white';
+    coinsElement.style.color = "yellow";
     coinsElement.innerHTML = `coins: ${coins}`
-    coinsElement.style.fontSize = '20px'
+    coinsElement.style.fontSize = '25px'
     coinsElement.style.alignContent = 'center'
     coinsElement.style.justifyContent = 'center'
     coinsElement.style.display = 'grid'
     console.log(coins);
 }
-
 coinDraw()
-let isUpdating = false;
+let isUpdating = new Array(20).fill(false);
 let duration = 0.2;
 let timer = 0;
-let isFinished = true;
-let state = "scaleDown";
+let isFinished = new Array(20).fill(true);
+let state = new Array(20).fill("scaleDown");
 
 //const element = card._createElement();
-function buildTile(color) {
+function buildTile(color, idx) {
     const element = card._createElement();
     element.classList.add("tile");
     element.style.transform = `scale(${card.scaleX},1)`
+    element.style.textAlign = 'center'
+    element.style.zIndex = `${idx}`
     element.setAttribute("data-color", color);
     element.setAttribute("data-revealed", "false");
     /*    element.addEventListener("click", () => {
@@ -69,17 +74,20 @@ function buildTile(color) {
     return element;
 }
 
+let i = 1;
+
 function buildGrid() {
-    for (i; i < tileCount; i++) {
+    for (i; i < tileCount + 1; i++) {
         const randomIndex = Math.floor(Math.random() * colorsPicklist.length);
         const color = colorsPicklist[randomIndex];
-        const tile = buildTile(color);
+        const tile = buildTile(color, i);
         colorsPicklist.splice(randomIndex, 1);
         tilesContainer.appendChild(tile);
     }
 }
 
 function click(element, color) {
+    anamtionController.flip(element, color, duration);
     const revealed = element.getAttribute("data-revealed");
     if (
         awaitingEndOfMove
@@ -92,21 +100,21 @@ function click(element, color) {
         activeTile = element;
         return;
     }
-
     const colorToMatch = activeTile.getAttribute("data-color");
     if (colorToMatch === color) {
         setTimeout(() => {
             element.setAttribute("data-revealed", "true");
             activeTile.setAttribute("data-revealed", "true");
-            element.style.background = "#333333";
-            activeTile.style.background = "#333333";
+            /*            element.style.background = "#333333";
+                        activeTile.style.background = "#333333";*/
+            element.remove();
+            activeTile.remove()
             coins += 1000;
             coinsElement.innerHTML = `coins: ${coins}`
             activeTile = null;
             awaitingEndOfMove = false;
             revealedCount += 2;
         }, 1000);
-
         if (revealedCount === tileCount) {
             alert("You win! Refresh to start again.");
             window.location.reload()
@@ -126,7 +134,7 @@ function click(element, color) {
             alert("You lose! Refresh to start again.");
             window.location.reload()
         }
-    }, 1000);
+    }, 800);
 }
 
 function resetButton() {
@@ -141,49 +149,34 @@ function resetButton() {
 let btnRs = document.getElementById("button")
 const element = document.getElementsByClassName('tile')
 let index;
+let pos1, pos2;
+let j = 0, k = 1;
+let positionLeft = [215, 331, 447, 563, 99, 215, 331, 447, 563, 99, 215, 331, 447, 563, 99, 215, 331, 447, 563, 99];
+let positionTop = [10, 10, 10, 10, 10, 136, 136, 136, 136, 136, 262, 262, 262, 262, 262, 388, 388, 388, 388, 388];
+
+function takePosition(j) {
+    pos1 = element[j].offsetLeft;
+    pos2 = element[j].offsetTop;
+    positionLeft.push(pos1)
+    positionTop.push(pos2)
+}
+
 function update(dt) {
     buildGrid()
+    if (k === 1) {
+        anamtionController.dealerCard(positionTop, positionLeft, colorsPicklist)
+        k++;
+    }
     for (let j = 0; j < element.length; j++) {
         element[j].onclick = function () {
             {
-                console.log(j)
+                takePosition(j)
                 index = j;
                 click(element[j], element[j].getAttribute("data-color"))
-                flip()
             }
         }
     }
-    animationFlip(dt, element[index])
     btnRs.onclick = function () {
         resetButton()
     };
-}
-
-function animationFlip(dt, element) {
-    if (!isUpdating || isFinished) return;
-    timer += dt;
-    if (state === "scaleDown") {
-        element.style.transform = `scaleX(${1 - timer / duration})`
-        console.log(typeof element.style.transform)
-        if (timer >= duration) {
-            element.style.transform = `scaleX(0)`
-            //card.scaleX = 0;
-            element.style.backgroundColor = element.getAttribute("data-color");
-            timer = 0;
-            state = "scaleUp";
-        }
-    } else {
-        element.style.transform = `scaleX(${timer / duration})`
-        if (timer >= duration) {
-            element.style.transform = `scaleX(1)`
-            isFinished = true;
-        }
-    }
-}
-
-function flip() {
-    isUpdating = true;
-    timer = 0;
-    isFinished = false;
-    state = "scaleDown";
 }
