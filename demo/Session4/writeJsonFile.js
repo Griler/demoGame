@@ -22,14 +22,14 @@ function readJsonFile(path) {
     jsonData = JSON.parse(data)
 }
 
-function addObject() {
+function addObjectToFile() {
     jsonData.push(object);
     jsonString = JSON.stringify(jsonData);
 }
 
 function start() {
     readJsonFile(pathDataWrite);
-    addObject();
+    addObjectToFile();
     writeJsonFile(pathDataWrite);
 }
 

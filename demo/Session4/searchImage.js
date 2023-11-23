@@ -1,18 +1,39 @@
 const fs = require('fs');
-const path = require('path')
-const pathFolder = '/Users/user/project/demo/Session4/basics'
-function getImagesFromFolder(folderPath) {
-    try {
-        const files = fs.readdirSync(folderPath);
-        const imageFiles = files.filter(file => {
-            console.log(file)
-            const fileExtension = path.extname(file).toLowerCase();
-            return ['.jpg', '.jpeg', '.png', '.gif'].includes(fileExtension);
-        });
-        return imageFiles;
-    } catch (error) {
-        console.error('Error:', error);
-        return [];
-    }
+const path = require('path');
+
+const folderPath = './basics';
+let imageFiles = []
+function checkImageFile(fileName) {
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
+
+    const ext = path.extname(fileName).toLowerCase();
+    return imageExtensions.includes(ext);
 }
-console.log(getImagesFromFolder(pathFolder))
+
+function findImageFilesRecursively(folderPath) {
+    fs.readdir(folderPath, (err, files) => {
+        if (err) {
+            console.error('Error reading folder:', err);
+            return;
+        }
+        imageFiles = files.filter(file => checkImageFile(file));
+        console.log(`Image files in ${folderPath}:`);
+        imageFiles.forEach(imageFile => {
+            console.log(path.join(folderPath, imageFile));
+        });
+        files.forEach(file => {
+            const filePath = path.join(folderPath, file);
+            fs.stat(filePath, (err, stat) => {
+                if (err) {
+                    console.error('Error checking file stat:', err);
+                    return;
+                }
+                if (stat.isDirectory()) {
+                    findImageFilesRecursively(filePath);
+                }
+            });
+        });
+    });
+}
+
+findImageFilesRecursively(folderPath);
