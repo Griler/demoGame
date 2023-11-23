@@ -1,4 +1,3 @@
-
 import {Tween} from "./Tween.js";
 import GameBoard from "./Entity/GameBoard.js";
 
@@ -23,6 +22,7 @@ function backGround() {
     document.body.style.backgroundSize = "cover"
     document.body.style.margin = "0"
 }
+
 function coinDraw() {
     coinsElement.style.color = "yellow";
     coinsElement.innerHTML = `coins: ${coins}`
@@ -32,6 +32,7 @@ function coinDraw() {
     coinsElement.style.display = 'grid'
     return coinsElement;
 }
+
 function btnDraw() {
     const btnElement = document.createElement("button");
     btnElement.style.background = '#ffffff';
@@ -47,6 +48,7 @@ function btnDraw() {
     };
     return btnElement;
 }
+
 function tableDraw() {
     const tableElement = document.createElement("table");
     tableElement.style.display = "grid";
@@ -60,6 +62,7 @@ function tableDraw() {
     tableElement.appendChild(coinDraw())
     document.body.appendChild(tableElement);
 }
+
 function eventClickCard(element, color) {
     if (isAnimating === 2) {
         return;
@@ -89,12 +92,14 @@ function eventClickCard(element, color) {
             activeTile = null;
             awaitingEndOfMove = false;
             revealedCount += 2;
-            isAnimating = 0;
-        }, 1200);
-        if (revealedCount === tileCount) {
-            alert("You win! Refresh to start again.");
-            window.location.reload()
-        }
+            setTimeout(() => isAnimating = 0, 1000);
+        }, 1000);
+        setTimeout(() => {
+            if (revealedCount === tileCount) {
+                alert("You win! Refresh to start again.");
+                window.location.reload()
+            }
+        }, 2200)
         return;
     }
     awaitingEndOfMove = true;
@@ -109,12 +114,15 @@ function eventClickCard(element, color) {
         awaitingEndOfMove = false;
         activeTile = null;
         isAnimating = 0;
-        if (coins <= 0) {
-            alert("You lose! Refresh to start again.");
-            window.location.reload()
-        }
+        setTimeout(() => {
+            if (coins <= 0) {
+                alert("You lose! Refresh to start again.");
+                window.location.reload()
+            }
+        }, 1000);
     }, 1200);
 }
+
 function resetButton() {
     let rs = window.confirm('Do you want reset game !')
     if (rs) {
@@ -123,13 +131,17 @@ function resetButton() {
         return 0;
     }
 }
+
 function gameStart() {
     backGround();
     let gameBoard = new GameBoard();
     gameBoard.buildBoardGame(tileCount, imgPicklist)
     anamtionController.dealerCard(positionTop, positionLeft)
-    setTimeout(()=>{gameBoard.children.forEach((child, index) => child.addEventListener('click',
-        () => eventClickCard(child, imgPicklist[index])))},2000);
+    setTimeout(() => {
+        gameBoard.children.forEach((child, index) => child.addEventListener('click',
+            () => eventClickCard(child, imgPicklist[index])))
+    }, 2000);
     tableDraw()
 }
+
 export {gameStart}

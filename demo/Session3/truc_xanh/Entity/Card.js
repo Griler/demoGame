@@ -15,8 +15,8 @@ class Card extends Node {
         this.elm.style.backgroundSize = "cover"
         this.elm.style.cursor = "pointer"
         this.elm.style.border = "2px solid #444444"
-        this.elm.style.top = '250px'
-        this.elm.style.left = '700px'
+        this.elm.style.top = '30%'
+        this.elm.style.left = '46%'
         return this;
     }
 

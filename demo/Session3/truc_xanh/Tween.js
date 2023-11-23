@@ -30,7 +30,6 @@ export class Tween {
                 (oj2.remove())
         });
     }
-
     dealerCard(positionTop, positionLeft) {
         let top = [...positionTop]
         let left = [...positionLeft]
@@ -48,5 +47,20 @@ export class Tween {
             },stagger: 0.1, onComplete: function () {
             }
         })
+    }
+
+    rotationCoin(){
+        var images = new Array()
+
+        setInterval("Animate()", 400);
+        var x = 0;
+
+        function Animate() {
+            document.getElementById("img").src = images[x]
+            x++;
+            if (images.length == x) {
+                x = 0;
+            }
+        }
     }
 }
